@@ -8,15 +8,15 @@ func SplitSpaceBracket1(s string, space, bracketLeft, bracketRight rune) (ranges
     const StateInBracket = 2
 
     state := StateIdle
-    for i, r := range s {
+    for i, ch := range s {
         switch state {
         case StateIdle:
-            switch r {
+            switch ch {
             case bracketLeft:
                 state = StateInBracket
-                ranges = append(ranges, i+1)
+                ranges = append(ranges, i + 1)
             case bracketRight:
-                err = ec.NewErrorf("unexcepted bracket right at %v", i)
+                err = ec.NewErrorf("unexpected right bracket at %v", i)
                 return
             case space:
             default:
@@ -24,26 +24,24 @@ func SplitSpaceBracket1(s string, space, bracketLeft, bracketRight rune) (ranges
                 ranges = append(ranges, i)
             }
         case StateWord:
-            switch r {
+            switch ch {
+            case space:
+                state = StateIdle
+                ranges = append(ranges, i)
             case bracketLeft:
                 fallthrough
             case bracketRight:
-                err = ec.NewErrorf("unexcepted bracket at %v", i)
+                err = ec.NewErrorf("unexpected bracket at %v", i)
                 return
-            case space:
-                ranges = append(ranges, i)
-                state = StateIdle
-            default:
             }
         case StateInBracket:
-            switch r {
-            case bracketLeft:
-                err = ec.NewErrorf("unexcepted left bracket at %v", i)
-                return
+            switch ch {
             case bracketRight:
-                ranges = append(ranges, i)
                 state = StateIdle
-            default:
+                ranges = append(ranges, i)
+            case bracketLeft:
+                err = ec.NewErrorf("unexpected left bracket at %v", i)
+                return
             }
         }
     }

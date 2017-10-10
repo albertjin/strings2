@@ -42,3 +42,13 @@ func ProcessBlocks(text, begin, end string, optionalEnding, includeBeginning, in
     }
 }
 
+func GetKeyValueMap(s string) (m map[string]string) {
+    m = map[string]string{}
+    for _, item := range strings.Split(s, ";") {
+        kv := strings.SplitN(item, "=", 2)
+        if len(kv) == 2 {
+            m[strings.TrimSpace(kv[0])] = strings.TrimSpace(kv[1])
+        }
+    }
+    return
+}
